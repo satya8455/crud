@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+ 
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .account-form {
+            padding: 20px;
+        }
+        .account-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            font-weight: bold;
+            color: #555;
+        }
+        .form-group input {
+            font-size: 16px;
+            border-radius: 4px;
+        }
+        .form-group .row {
+            margin-bottom: 10px;
+        }
+        .error-message {
+            color: red;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+  
+    <div class="container">
+        <form class="account-form" th:action="@{/create}" th:object="${account}" method="post" onsubmit="return validateForm()">
+            <h2>Create Account</h2>
+            <div class="error-message" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+            
+            <div class="form-group row">
+                <div class="col">
+                    <label for="firstname">First Name:</label>
+                    <input type="text" class="form-control" id="firstname" name="name" placeholder="Enter your first name" required pattern="[A-Za-z]+" title="Only alphabetic characters are allowed">
+                </div>
+                <div class="col">
+                    <label for="lastname">Last Name:</label>
+                    <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Enter your last name" required pattern="[A-Za-z]+" title="Only alphabetic characters are allowed">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col">
+                    <label for="mobile">Mobile:</label>
+                    <input type="text" class="form-control" id="mobile" name="mobile" placeholder="Enter your mobile number" required pattern="\d{10}" title="Mobile number must be exactly 10 digits">
+                </div>
+                <div class="col">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password:</label>
+                <input type="password" class="form-control" id="confirm-password" name="confirmPassword" placeholder="Confirm your password" required>
+                <div id="passwordError" class="error-message"></div>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </div>
+        </form>
+
+        <div class="text-center mt-3">
+            <p>
+                Already registered? <a href="/login">Login here</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        function validateForm() {
+            var password = document.getElementById('password').value;
+            var confirmPassword = document.getElementById('confirm-password').value;
+            if (password !== confirmPassword) {
+                document.getElementById('passwordError').textContent = 'Passwords do not match';
+                return false; // Prevent form submission
+            }
+            return true; // Allow form submission
+        }
+    </script>
+  
+</body>
+</html>

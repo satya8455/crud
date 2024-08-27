@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- Link to your CSS -->
+    <style>
+    
+    
+    body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+header nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+header nav ul li {
+    display: inline;
+    margin: 0 15px;
+}
+
+header nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+header nav ul li a:hover {
+    text-decoration: underline;
+}
+
+main {
+    padding: 20px;
+}
+    
+    
+    </style>
+</head>
+<body>
+    <header>
+        <h1>My Dashboard </h1>
+        <nav>
+            <ul>
+                <li><a href="/index">Add Employee</a></li>
+                <li><a href="/category">Categories</a></li>
+                <li><a href="/subcategorie">SubCategories</a></li>
+                <li><a href="/assets">Assets</a></li>
+                <li><a href="/management">Management</a></li>
+                <li><a href="/viewmanagment">View Management</a></li>
+                <li><a href="/api/hr">APPLY FOR LEAVE</a></li>
+                <li><a href="/api/viewLeaves">View DATA REPORT</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+       <!-- <div th:replace="${pageContent}"></div> -->
+    </main>
+    <footer>
+        <!-- Your footer content -->
+    </footer>
+</body>
+</html>

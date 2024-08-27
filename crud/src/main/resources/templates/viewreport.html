@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Data Report</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="flex items-center justify-center h-screen bg-gray-200">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl border border-gray-300">
+        <h2 class="text-3xl font-bold mb-8 text-center text-blue-800">HR Data Report</h2>
+        <form id="hrForm" onsubmit="FormSubmit(); return false;">
+            <div class="mb-6">
+                <label for="startDate" class="block text-gray-700 font-semibold mb-2 text-lg">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+            </div>
+            <div class="mb-6">
+                <label for="endDate" class="block text-gray-700 font-semibold mb-2 text-lg">End Date:</label>
+                <input type="date" id="endDate" name="endDate" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+            </div>
+            <div class="mb-6">
+                <label for="employeename" class="block text-gray-700 font-semibold mb-2 text-lg">Employee Name:</label>
+                <select id="employeename" name="employeename" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                    <option value="">Select Employee Name</option>
+                </select>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out">Fetch Data</button>
+            </div>
+        </form>
+        <div id="result" class="mt-8"></div>
+    </div>
+    <script>
+    //fetch the employees
+        function fetchEmployees() {
+            var employeeSelect = document.getElementById("employeename");
+            employeeSelect.innerHTML = '<option value="">Loading...</option>';
+
+            fetch('/fetchEmployees')
+                .then(response => response.json())
+                .then(data => {
+                    employeeSelect.innerHTML = '<option value="">Select Employee Name</option>';
+                    data.forEach(employee => {
+                        var option = document.createElement("option");
+                        option.textContent = employee;
+                        option.value = employee;
+                        employeeSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching employee names:', error);
+                    employeeSelect.innerHTML = '<option value="">Error loading employee names</option>';
+                });
+        }
+
+        function FormSubmit() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const employeeName = document.getElementById('employeename').value;
+//it fetch the data from backend
+            fetch(`/api/fetchhr?startDate=${startDate}&endDate=${endDate}&employeename=${employeeName}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById('result');
+                    resultDiv.innerHTML = '';
+
+                    if (Array.isArray(data) && data.length > 0) {
+                        let table = '<table class="w-full border-collapse border border-gray-300"><thead><tr><th class="bg-gray-200 border border-gray-300 p-4 text-left text-blue-800">ID</th><th class="bg-gray-200 border border-gray-300 p-4 text-left text-blue-800">Employee Name</th><th class="bg-gray-200 border border-gray-300 p-4 text-left text-blue-800">Status</th><th class="bg-gray-200 border border-gray-300 p-4 text-left text-blue-800">Start Date</th><th class="bg-gray-200 border border-gray-300 p-4 text-left text-blue-800">Modify Date</th><th class="bg-gray-200 border border-gray-300 p-4 text-left text-blue-800">Actions</th></tr></thead><tbody>';
+                        data.forEach(item => {
+                            table += `<tr class="hover:bg-gray-100">
+                                <td class="border border-gray-300 p-4">${item.id}</td>
+                                <td class="border border-gray-300 p-4">${item.employeename}</td>
+                                <td class="border border-gray-300 p-4">${item.status}</td>
+                                <td class="border border-gray-300 p-4">${item.startDate}</td>
+                                <td class="border border-gray-300 p-4">${item.modifydate}</td>
+                                <td class="border border-gray-300 p-4"><a href="/api/editLeave?id=${item.id}"><button class="bg-green-500 text-white py-1 px-3 rounded-lg font-semibold hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-150 ease-in-out">Edit</button></a></td>
+                            </tr>`;
+                        });
+                        table += '</tbody></table>';
+                        resultDiv.innerHTML = table;
+                    } else {
+                        resultDiv.innerHTML = '<p class="text-center text-gray-700">No data found for the given criteria.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    resultDiv.innerHTML = '<p class="text-center text-red-500">An error occurred while fetching data.</p>';
+                });
+        }
+
+        window.onload = function() {
+            fetchEmployees();
+        };
+    </script>
+</body>
+</html>

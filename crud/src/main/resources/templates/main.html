@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+<style>
+/* Include your CSS here or link to an external stylesheet */
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin: 0;
+  background-color: #f0f0f0; /* Set a light background color */
+}
+
+.header {
+  background-color: #4CAF50; /* Green background color */
+  color: white; /* White text color */
+  padding: 10px;
+  text-align: center;
+}
+
+.center-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.center-container button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4CAF50; /* Green background color */
+  color: white; /* White text color */
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  text-decoration: none; /* Remove underline from links */
+  display: inline-block; /* Ensure the button respects padding */
+  transition: background-color 0.3s; /* Smooth transition on hover */
+}
+
+.center-container button:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+.content {
+  padding: 20px;
+  background-color: #fff;
+  margin-top: 20px;
+}
+</style>
+</head>
+<body>
+  <div class="header">
+    <h1>Dashboard</h1>
+  </div>
+  <div class="center-container">
+    <button><a href="#" th:href="@{/index}" th:replace="fragments/index :: indexContent">Add Employee</a></button>
+    <button><a href="#" th:href="@{/category}" th:replace="fragments/category :: categoryContent">Categories</a></button>
+    <button><a href="#" th:href="@{/subcategorie}" th:replace="fragments/subcategorie :: subcategorieContent">SubCategories</a></button>
+    <button><a href="#" th:href="@{/assets}" th:replace="fragments/assets :: assetsContent">Assets</a></button>
+    <button><a href="#" th:href="@{/managment}" th:replace="fragments/managment :: managmentContent">Management</a></button>
+    <button><a href="#" th:href="@{/viewmanagment}" th:replace="fragments/viewmanagment :: viewmanagmentContent">View Management</a></button>
+  </div>
+  <div class="content" th:replace="${content}"> <!-- Content will be loaded here --></div>
+</body>
+</html>

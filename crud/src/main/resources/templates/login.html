@@ -1,0 +1,232 @@
+<html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif; /* Ensure consistent font across different browsers */
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .account-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .account-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .form-group button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-group button:hover {
+            background-color: #45a049;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #555;
+        }
+
+        .login-link a {
+            color: #007bff; /* Blue color for the link */
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        #captcha-text{
+         text-align: center;
+        width: calc(20% - 0px);
+        transition: 0.3s ease;
+        
+        }
+
+           .captcha-box {
+        margin-top: 10px;
+        padding: 10px;
+         display:flex;
+         
+     
+        
+      
+    }
+
+    .captcha-box h2 {
+        margin-bottom: 10px;
+        font-size: 18px; 
+        color: #333;
+    }
+
+    .captcha-box p {
+        margin-bottom: 5px;
+        font-size: 14px; /* Adjusted font size */
+        color: #555;
+    }
+
+    .captcha-box button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 8px 15px; /* Adjusted padding */
+        font-size: 14px; /* Adjusted font size */
+        cursor: pointer;
+        border-radius: 4px;
+        margin-bottom: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .captcha-box input[type="text"] {
+        width: calc(40% - 0px); /* Adjusted width */
+        padding: 2px;
+        font-size: 14px; /* Adjusted font size */
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        transition: border-color 0.3s ease;
+    }
+
+    .captcha-box p#captcha-status {
+        margin-top: 5px;
+        font-size: 14px; /* Adjusted font size */
+        color: red;
+        font-weight: bold;
+    }
+    #regen{
+    font-size: 14px;
+    }
+    </style>
+</head>
+<body>
+<div class="container">
+    <form  th:action="@{/logincheck}" class="account-form"method="post">
+        <h2>Login</h2>
+       
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        </div>
+        
+        <div class="captcha-box">
+             
+            
+            <input type="text" id="captcha-input" name="captcha" placeholder="Enter text here" required>
+            <p id="captcha-text"></p>
+            <button id="regen" onclick="regenerateCaptcha()">regenerate</button>
+            <p id="captcha-status"></p>
+        </div>
+        <div class="form-group">
+            <button type="submit" onclick="validateCaptcha()">Login</button>
+        </div>
+    </form>
+    <div class="login-link">
+        <p>Not registered yet? <a href="/">Create an account</a></p>
+    </div>
+</div>
+
+<script>
+    function generateCaptcha() {
+        var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        var length = 6;
+        var captcha = "";
+        for (var i = 0; i < length; i++) {
+            var index = Math.floor(Math.random() * chars.length);
+            captcha += chars.charAt(index);
+        }
+        return captcha;
+    }
+
+    function displayCaptcha() {
+        var captchaText = generateCaptcha();
+        document.getElementById('captcha-text').textContent = captchaText;
+    }
+
+    function validateCaptcha() {
+        var userInput = document.getElementById('captcha-input').value.trim();
+        var captchaText = document.getElementById('captcha-text').textContent;
+
+        if (userInput === captchaText) {
+            document.getElementById('captcha-status').textContent = "Captcha verified!";
+            return true; 
+        } else {
+            document.getElementById('captcha-status').textContent = "Incorrect captcha. Please try again.";
+            alert("Enter the correct captcha.");
+            regenerateCaptcha();
+            return false; // Prevent form submission
+        }
+    }
+    
+    function regenerateCaptcha() {
+    	    var captchaText = generateCaptcha();
+    	    document.getElementById('captcha-text').textContent = captchaText;
+    	    document.getElementById('captcha-status').textContent = ''; // Clear any previous status message
+    	    document.getElementById('captcha-input').value = ''; // Clear previous user input
+
+    }
+
+    displayCaptcha();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management Page</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/header.css">
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .form-container h2 {
+            text-align: center;
+            background-color: blue;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+    <script>
+        async function getSubcategories() {
+            const categoryId = document.getElementById("category").value;
+            const subcategorySelect = document.getElementById("subcategory");
+
+            subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+
+            if (categoryId) {
+                try {
+                    const response = await fetch(`/fetchSubcategories?categoryId=${encodeURIComponent(categoryId)}`);
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    const subcategories = await response.json();
+
+                    subcategories.forEach(subcategory => {
+                        const option = document.createElement("option");
+                        option.textContent = subcategory.sub_name;
+                        option.value = subcategory.id;
+                        subcategorySelect.appendChild(option);
+                    });
+
+                    subcategorySelect.disabled = false;
+                } catch (error) {
+                    console.error("Failed to fetch subcategories:", error);
+                }
+            } else {
+                subcategorySelect.disabled = true;
+            }
+        }
+
+        async function fetchOptions(url, elementId, optionText) {
+            const selectElement = document.getElementById(elementId);
+            selectElement.innerHTML = '<option value="">Loading...</option>';
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+
+                selectElement.innerHTML = `<option value="">${optionText}</option>`;
+                data.forEach(item => {
+                    const option = document.createElement("option");
+                    option.textContent = item;
+                    option.value = item;
+                    selectElement.appendChild(option);
+                });
+            } catch (error) {
+                console.error(`Error fetching ${optionText.toLowerCase()}:`, error);
+                selectElement.innerHTML = `<option value="">Error loading ${optionText.toLowerCase()}</option>`;
+            }
+        }
+
+        window.onload = function() {
+            fetchOptions('/fetchSerialNumbers', 'slNo', 'Select Serial Number');
+            fetchOptions('/fetchEmployees', 'employeename', 'Select Employee Name');
+            fetchOptions('/fetchCompanyNames', 'companyname', 'Select Company Name');
+        };
+    </script>
+</head>
+<body>
+    <div th:replace="fragments/header :: header"></div>
+    <main>
+        <div class="container">
+            <div class="form-container">
+                <h2>Management Items</h2>
+                <!-- Form for adding items -->
+                <form id="addItemForm" action="/managment" method="post">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="category">Category:</label>
+                            <select class="form-control" id="category" name="category.id" onchange="getSubcategories()">
+                                <option value="">Select Category</option>
+                                <th:block th:each="category : ${categories}">
+                                    <option th:value="${category.id}" th:text="${category.name}" th:selected="${category.id == selectedCategoryId}"></option>
+                                </th:block>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="subcategory">Subcategory:</label>
+                            <select class="form-control" id="subcategory" name="subcategory.id" disabled>
+                                <option value="">Select Subcategory</option>
+                                <th:block th:each="subcategory : ${subcategories}">
+                                    <option th:value="${subcategory.id}" th:text="${subcategory.name}"></option>
+                                </th:block>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="companyname">Company Name:</label>
+                            <select class="form-control" id="companyname" name="companyname">
+                                <option value="">Select Company Name</option>
+                                <!-- Company names will be populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="slNo">Serial Number:</label>
+                            <select class="form-control" id="slNo" name="slNo" required>
+                                <option value="">Select Serial Number</option>
+                                <!-- Serial numbers will be populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="employeename">Employee Name:</label>
+                            <select class="form-control" id="employeename" name="employeeName" required>
+                                <option value="">Select Employee Name</option>
+                                <!-- Employee names will be populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="quantity">Quantity:</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" placeholder="Enter quantity" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="date">Date:</label>
+                            <input type="date" class="form-control" id="date" name="date" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6 offset-md-3">
+                            <button type="submit" class="btn btn-primary btn-block">Submit</button>
+                        </div>
+                    </div>
+                </form>
+                <!-- Form for uploading Excel file -->
+                <h2>Upload Excel File</h2>
+                <form action="/uploadCsv" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <input type="file" name="fileUpload" class="form-control-file" accept=".csv" required>
+                    </div>
+                    <button type="submit" class="btn btn-secondary">Upload</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
